@@ -1,10 +1,7 @@
-TMUX
-
 вернуться в сессию закрытую
 tmux attach
 tmux ls
 tmux attach -t 1
-
 
 Справка по командам	?
 Командная строка	:
@@ -100,15 +97,6 @@ tmux attach -t 1
 Список поддерживаемых комманд
 # tmux list-commands
 
-
-
-
-
-
-
-
-
-
 tmux [command]     # Run a command
                      # 'tmux' with no commands will create a new session
 
@@ -192,20 +180,6 @@ tmux [command]     # Run a command
   M-Up, M-Down       # Resize the current pane in steps of five cells
   M-Left, M-Right
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $HOME/.tmux.conf
 # Поместите файл в домашнюю директорию, или его содержимое в файл ~/.tmux.conf
 
@@ -251,8 +225,6 @@ set-window-option -g window-status-current-attr bright
 set -g message-fg white
 set -g message-bg black
 set -g message-attr bright
-
-
 
 # Клавиатурные сочетания -----------------------------------------------------------------
 
