@@ -1,0 +1,285 @@
+TMUX
+
+вернуться в сессию закрытую
+tmux attach
+tmux ls
+tmux attach -t 1
+
+
+Справка по командам	?
+Командная строка	:
+Увести tmux в фон	d
+Создать новое окно	c
+Следующее окно	n
+Предыдущее окно	p
+Выбрать окно под соответствующим номером	0-9
+Предыдущее окно	l
+Выбрать окно из списка	w
+Выбрать сессию	s
+Разделить окно вертикально	"
+Разделить окно горизонтально	%
+Листать "слои"	Space(пробел)
+Удалить фрейм	!
+Переместить фрейм вверх	{
+Переместить фрейм вниз	}
+Следущий фрейм	o
+Изменить размеры фрейма	Alt + Стрелки
+Удалить окно	&
+Обновить клиент	r
+Часы	t
+Найти окно	f
+Переименовать окно	,
+Изменить номер окна	.
+Перейти в режим копирования	[
+Вставить содержимое буфера обмена	]
+
+
+Старт
+# tmux //без параметров будет создана сессия 0
+# tmux new -s session1 //новая сессия session1. Название отображается снизу-слева в квадратных скобках в статус строке. Далее идет перечисление окон. Текущее окно помечается звездочкой. 
+
+Префикс (с него начинаются команды)
+<C-b> (CTRL + b)
+
+Новое окно (нажать CTRL+b, затем нажать с)
+<C-b c> 
+
+Список окон
+<C-b w> // переключиться курсором вверх-вниз
+
+Переключение 
+<C-b n> // следующее окно
+<C-b p> // предыдущее окно
+<C-b 0> // переключиться на номер окна
+
+Окна можно делить на панели (Panes)
+Как в тайловых (мозаичных) оконных менеджерах.
+
+Деление окна горизонтально 
+<C-b ">
+либо команда
+# tmux split-window -h
+
+Деление окна вертикально
+<C-b %>
+либо команда
+# tmux split-window -v
+
+Переход между панелей
+<C-b стрелки курсора> // либо режим мыши
+
+Изменение размеров панелей
+<C-b c-стрелки> // либо режим мыши
+
+Закрытие окон
+<C-b x> // нужно подтвердить y
+либо
+# exit
+
+Отключение от сессии
+<C-b d>
+либо
+# tmux detach
+
+Список сессий
+# tmux ls
+
+Подключиться к работающей сессии
+# tmux attach //подключение к сессии, либо к единственной, либо последней созданной
+# tmux attach -t session1 // подключение к сессии session1
+
+Выбрать сессию
+<C-b s>
+
+Завершение сессии
+# tmux kill-session -t session1
+
+Завершить все сессии
+# tmux kill-server
+
+Список поддерживаемых комманд
+# tmux list-commands
+
+
+
+
+
+
+
+
+
+
+tmux [command]     # Run a command
+                     # 'tmux' with no commands will create a new session
+
+    new              # Create a new session
+     -s "Session"    # Create named session
+     -n "Window"     # Create named Window
+     -c "/dir"       # Start in target directory
+
+    attach           # Attach last/available session
+     -t "#"          # Attach target session
+     -d              # Detach the session from other instances
+
+    ls               # Показать список открытых сессий
+     -a              # Показать список всех открытых сессий
+
+    lsw              # Показать список окон
+     -a              # Показать список всех окон
+     -s              # Показать список всех окон в текущей сессии
+
+    lsp              # Показать список панеленй
+     -a              # Показать список всех
+     -s              # Показать список панелей в данной сессии
+     -t              # Показать список панелей в указанной
+
+    kill-window      # Убить текущее окно
+     -t "#"          # Убить указанное окно
+     -a              # Убить все окна
+     -a -t "#"       # Убить все окна, кроме указанного
+
+    kill-session     # Убить текущую сессию
+     -t "#"          # Убить указанную сессию
+     -a              # Убить все сессии
+     -a -t "#"       # Убить все сессии, кроме указанной
+
+Комбинации клавиш:
+
+----------------------------------------------------------------------
+  (C-b) = Ctrl + b    # 'Prefix' combination required to use keybinds
+
+  (M-1) = Meta + 1 -or- Alt + 1
+----------------------------------------------------------------------
+
+  ?                  # List all key bindings
+  :                  # Enter the tmux command prompt
+  r                  # Force redraw of the attached client
+  c                  # Create a new window
+
+  !                  # Break the current pane out of the window.
+  %                  # Split the current pane into two, left and right
+  "                  # Split the current pane into two, top and bottom
+
+  n                  # Change to the next window
+  p                  # Change to the previous window
+  {                  # Swap the current pane with the previous pane
+  }                  # Swap the current pane with the next pane
+
+  s                  # Select a new session for the attached client
+                     interactively
+  w                  # Choose the current window interactively
+  0 to 9             # Select windows 0 to 9
+
+  d                  # Detach the current client
+  D                  # Choose a client to detach
+
+  &                  # Kill the current window
+  x                  # Kill the current pane
+
+  Up, Down           # Change to the pane above, below, left, or right
+  Left, Right
+
+  M-1 to M-5         # Arrange panes:
+                       # 1) even-horizontal
+                       # 2) even-vertical
+                       # 3) main-horizontal
+                       # 4) main-vertical
+                       # 5) tiled
+
+  C-Up, C-Down       # Resize the current pane in steps of one cell
+  C-Left, C-Right
+
+  M-Up, M-Down       # Resize the current pane in steps of five cells
+  M-Left, M-Right
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$HOME/.tmux.conf
+# Поместите файл в домашнюю директорию, или его содержимое в файл ~/.tmux.conf
+
+# Основные настройки  --------------------------------------------------------------
+
+set -g set-titles on                                    # Разрешить смену заголовков в оконном менеджере
+set -g set-titles-string "tmux.#I.#W"                   # Формат строки заголовка
+
+set -g base-index 1                                     # Начинать отсчёт окон с первого
+
+set -g history-limit 5000                               # Размер буфера в линиях
+
+set -g bell-action any                                  # Следить за активностью на всех окнах
+
+setw -g monitor-activity on                             # Информировать когда есть активность в окнах
+set -g visual-activity on                               # Показывать статусное сообщение при активности в каком либо окне
+
+bind-key k confirm kill-window                          # Подтверждать уничтожение окна
+bind-key K confirm kill-server                          # Подтверждать уничтожение сервера
+
+# Статусбар -------------------------------------------------------------------
+
+set -g display-time 2000                                # Время в миллисекундах, сколько будут отображаться сообщения (в статусбаре к примеру)
+
+# Цвета  ---------------------------------------------------------------------
+
+# Цвета статусбара
+set -g status-fg white
+set -g status-bg default
+set -g status-attr default
+
+# Цвета заголовков окон
+set-window-option -g window-status-fg cyan
+set-window-option -g window-status-bg default
+set-window-option -g window-status-attr dim
+
+# Цвета активных окон
+set-window-option -g window-status-current-fg white
+set-window-option -g window-status-current-bg default   # Выделение активного окна белым цветом
+set-window-option -g window-status-current-attr bright
+
+# Цвета командной строки
+set -g message-fg white
+set -g message-bg black
+set -g message-attr bright
+
+
+
+# Клавиатурные сочетания -----------------------------------------------------------------
+
+unbind C-b                                              # "Разбиндинг" префикса по умолчанию
+set -g prefix C-q                                       # Новый префикс для всех комбинаций клавиш - Ctrl-q
+
+# Навигация в командной строке, и в списке окон как в vi
+set -g status-keys vi
+setw -g mode-keys vi
+
+bind-key -n C-n next                                    # Следующий таб
+bind-key -n C-p prev                                    # Предыдущий таб
+
+bind-key b set-option status                            # Включить\Выключить статус бар
+
+unbind %                                                # Выключаем клавишу для горизонтального разбиения окна по умолчанию
+bind H split-window -h                                  # Назначаем другую
+unbind '"'                                              # Тоже самое, только по вертикали
+bind V split-window -v                                  # ----
+
+# Переход на окно по F1-F9
+bind-key -n F1 select-window -t 1
+bind-key -n F2 select-window -t 2
+bind-key -n F3 select-window -t 3
+bind-key -n F4 select-window -t 4
+bind-key -n F5 select-window -t 5
+bind-key -n F6 select-window -t 6
+bind-key -n F7 select-window -t 7
+bind-key -n F8 select-window -t 8
+bind-key -n F9 select-window -t 9
