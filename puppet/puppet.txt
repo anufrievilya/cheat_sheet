@@ -1,0 +1,291 @@
+puppet
+в скриптах описываются действия. А не само СОСТОЯНИЕ сервера, к какому он должен прийти.
+За это и  отвечает Puppet.
+Puppet - как раз отвечает за декларирование СОСТОЯНИЕ сервера. 
+Declarative Domain Language (DSL) - язык описания состояния.
+
+
+Манифесты Puppet декларативно описывает нужное состояние системы.
+https://www.example42.com/tutorials/PuppetTutorial/#slide-17
+
+file { "${ssh_keys_path}/alice_keys" : 
+ensure => file, 
+mode => '0440', 
+owner => 'alice', 
+group => 'root', 
+content => 'Here comes a key data for example QWERTYUIOASFGDHLKAALKJHksdAAB3NzaC1yc2EAAAAB', 
+require => File[$ssh_keys_path], }
+
+
+ssh_authorized_key { 'nick@magpie.example.com':
+  ensure => present,
+  user   => 'nick',
+  type   => 'ssh-rsa',
+  key    => 'AAAAB3Nza[...]qXfdaQ==',
+}
+
+удалить все ключи, которые не находятся в описании   This will remove any keys in ~/.ssh/authorized_keys
+user { 'nick':
+  ensure         => present,
+  purge_ssh_keys => true,
+}
+
+Autorequires: If Puppet is managing the user account in which this SSH key should be installed, the ssh_authorized_key resource will autorequire that user.
+
+Attributes
+ssh_authorized_key { 'resource title':
+  name     => # (namevar) The SSH key comment. This can be anything, and...
+  ensure   => # The basic property that the resource should be...
+  key      => # The public key itself; generally a long string...
+  options  => # Key options; see sshd(8) for possible values...
+  provider => # The specific backend to use for this...
+  target   => # The absolute filename in which to store the SSH...
+  type     => # The encryption type used.  Valid values are...
+  user     => # The user account in which the SSH key should be...
+  # ...plus any applicable metaparameters.
+}
+
+
+user { 'mitchell':
+ensure     => present,
+uid        => '1000',
+gid        => '1000',
+shell      => '/bin/bash',
+home       => '/home/mitchell'
+}
+
+
+Чтобы просмотреть все типы ресурсов Puppet, введите команду:
+
+puppet resource --types
+
+
+Определение класса имеет такой формат: (классы нужны для того чтобы добавлять в манифест, повторное использование)
+
+class example_class {
+...
+code
+...
+}
+
+
+Обычное объявление класса добавляется в код с помощью ключевого слова include.
+
+include example_class
+
+При объявлении по типу ресурса класс объявляется в формате ресурса:
+
+class { 'example_class': }
+
+
+
+
+sudo vi /etc/puppet/manifests/anufrieviv_a_add.pp
+
+# запуск команды 'apt-get update'
+exec { 'apt-update':                    # ресурс exec 'apt-update'
+command => '/usr/bin/apt-get update'  # команда, которую запустит этот ресурс
+}
+# установка пакета apache2
+package { 'apache2':
+require => Exec['apt-update'],        # запрос 'apt-update' перед установкой пакета
+ensure => installed,
+}
+# запуск сервиса apache2
+service { 'apache2':
+ensure => running,
+}
+# установка mysql-server
+package { 'mysql-server':
+require => Exec['apt-update'],        # запрос 'apt-update' передустановкой
+ensure => installed,
+}
+# запуск сервиса mysql
+service { 'mysql':
+ensure => running,
+}
+# установка пакета php5
+package { 'php5':
+require => Exec['apt-update'],        # запрос 'apt-update' перед установкой
+ensure => installed,
+}
+# запуск сервиса info.php
+file { '/var/www/html/info.php':
+ensure => file,
+content => '<?php  phpinfo(); ?>',    # код phpinfo
+require => Package['apache2'],        # запрос пакета 'apache2'
+}
+
+
+Чтобы использовать новый манифест, введите команду:
+
+sudo puppet apply --test
+
+Если вы хотите внести изменения прямо сейчас, 
+sudo puppet agent --test
+
+Манифесты
+с расширением .pp (По умолчанию выполняется $confdir/manifests/site.pp).
+Их иногда называют рецептами, представляют собой текстовые файлы с расширением .pp 
+(По умолчанию выполняется $confdir/manifests/site.pp). 
+В манифесте могут и должны содержаться:
+__________________________________________________________________________________________________________________________________
+Классы (class)
+Узлы (node)
+Ресурсы (то есть типы file, user и др.)
+Ссылки на другие манифесты (import)
+__________________________________________________________________________________________________________________________________
+В манифесте могут и должны содержаться:
+Классы (class)
+Узлы (node)  --> Что это такое??
+Ресурсы (то есть типы file, user и др.)
+Ссылки на другие манифесты (import)
+
+Когда клиеныт коннектятся - Puppet Master создаёт каталог в котором содеражаться ресурсы которые будут применять клиенты.
+Puppet environment - окружение 
+__________________________________________________________________________________________________________________________________
+Типы ресурсов - отдельные сущности.
+type
+title
+type { 'title':
+  argument  => value,
+  other_arg => value,
+}
+file { 'motd':
+  path    => '/etc/motd',
+  content => 'Tomorrow is another day',
+}
+__________________________________________________________________________________________________________________________________
+
+puppet describe file		опсывает данный 'file' type
+puppet describe --list      выведет кучу type'ов, которые используются в системе.
+
+Installation of OpenSSH package
+package { 'openssh':
+  ensure => present,
+}
+
+Creation of /etc/motd file
+file { 'motd':
+  path => '/etc/motd',
+}
+
+Start of httpd service
+service { 'httpd':
+  ensure => running,
+  enable => true,
+}
+
+Management of nginx service with parameters defined in module's variables
+
+service { 'nginx':
+  ensure     => $::nginx::manage_service_ensure,
+  name       => $::nginx::service_name,
+  enable     => $::nginx::manage_service_enable,
+}
+Creation of nginx.conf with content retrieved from different sources (first found is served)
+
+file { 'nginx.conf':
+  ensure  => present,
+  path    => '/etc/nginx/nginx.conf',
+  source  => [
+      "puppet:///modules/site/nginx.conf--${::fqdn}",
+      "puppet:///modules/site/nginx.conf" ],
+}
+
+ уровень абстракции ресурсов (resource abstraction layer - RAL) 
+Use puppet resource to interrogate the RAL:
+puppet resource user
+
+puppet resource user root
+
+puppet resource package
+
+puppet resource service
+
+Or to directly modify resources:
+puppet resource service httpd ensure=running enable=true
+
+типы и провайдеры types and providers.
+
+
+__________________________________________________________________________________________________________________________________
+Example of a class definition:
+
+class mysql (
+  root_password => 'default_value',
+  port          => '3306',
+) {
+  package { 'mysql-server':
+    ensure => present,
+  }
+  service { 'mysql':
+    ensure    => running,
+  }
+  [...]
+}
+
+включение класса mysql в другой класс.
+Старая нотация.
+include mysql  
+Новая нотация.
+class { 'mysql':
+  root_password => 'my_value',
+  port          => '3307',
+}
+
+__________________________________________________________________________________________________________________________________
+puppet apply --configprint modulepath — выводит значение конкретной настройки puppet.conf (в данном случае modulepath), если ввести --configprint all можно получить полный текущий конфиг. (И сохранить перед тем как начать что-то править…)
+puppet resource <type> <id> — позволяет получить описание ресурса определённого типа <type> с идентификатором <id> сразу на декларативном языке puppet. Например puppet resource user root. Тип ресурса user а его идентификатор (адрес) root
+puppet describe -s <type> — позволяет получить описание типа, имеющихся для него команд.
+puppet apply <my_test_manifest.pp> — выполняет указанный манифест.
+puppet apply -e «include undeclaredclass» — выполнит незадекларированный класс undeclaredclass, находящийся в одном из написанных вами модулей (естественно, расположенном в папке $modulepath).
+
+ puppet generate types
+
+
+[root@puppetserver puppet]# puppet cert list
+  "puppetclient" (SHA256) 7E:2F:77:09:F5:D9:2C:0A:D0:8D:A6:86:E6:D7:84:1A:2B:BA:31:6C:19:37:DC:83:0D:63:CF:49:AD:B5:B9:A9
+puppet cert sign host1.nyc3.example.com
+puppet cert sign --all
+__________________________________________________________________________________________________________________________________
+
+Hiera (от hierarchy) оперирует иерархией. И я написал следующую иерархию в /etc/puppet/hiera.yaml:
+:hierarchy:
+    - "%{::environment}/nodes/%{::fqdn}"
+    - "%{::environment}/roles"
+    - "%{::environment}/%{::environment}"
+    - common
+:backends:
+    - yaml
+:yaml:
+    :datadir: '/etc/puppet/hiera'
+
+
+
+Конфигурации для управляемых нод хранятся на серверах puppet в виде текстовых файлов. 
+Такие файлы называются манифестами. Манифесты объединяются в окружения.
+Каждое окружение puppet содержит свой набор манифестов. Окружение по умолчанию называется production. 
+
+Для синхронизации окружений на каждом puppet-сервере используется робот R10k,
+который запускается с помощью post-receive хука в git-репозитории.
+
+
+Данные, передаваемые puppet-агентами на серверы puppet, можно хранить локально на серверах в виде текстовых файлов,
+или в базе данных PuppetDB. PuppetDB позволяет использовать продвинутые возможности puppet, 
+а также может использоваться в сторонних приложениях.
+
+__________________________________________________________________________________________________________________________________
+
+
+__________________________________________________________________________________________________________________________________
+
+
+
+
+
+
+
+
+
+
