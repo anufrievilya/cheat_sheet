@@ -1,0 +1,55 @@
+Запуск виртуалки:
+sudo virt-install —name teaming —ram 2048 —disk size=8,format=qcow2 —vcpus 2 \
+       —location /tmp/CentOS-7-x86_64-Minimal-1708.iso \
+       —initrd-inject /path/to/ centos-cfg-minimal.ks  \
+       —virt-type kvm \
+       —extra-args ks=file:/ centos-cfg-minimal.ks
+Ищем IP адрес при помощи sudo virsh net-dhcp-leases default и пытаемся зайти по SSH root пользователем. Получилось? Идём дальше.
+
+
+#version=DEVEL
+# System authorization information
+auth --enableshadow --passalgo=sha512
+# Use CDROM installation media
+cdrom
+# Use graphical install
+graphical
+# Run the Setup Agent on first boot
+firstboot --enable
+ignoredisk --only-use=vda
+# Keyboard layouts
+keyboard --vckeymap=us --xlayouts='us'
+# System language
+lang en_US.UTF-8
+
+# Network information
+network  --bootproto=dhcp --device=eth0 --onboot=yes --ipv6=auto --activate
+network  --hostname=teaming-demo.localdomain
+
+# Root password
+rootpw --iscrypted $6$QoDr6bS9T/vfei.j$cetxu.JRCq3xl3ZvmPDDwWyIrQnlQUJ0zVvT89Wksdp1ALNjGUcBeO27A.hZjqx6cYe6LwfcmcZWhqlaf006V/
+# System services
+services --enabled="chronyd"
+# System timezone
+timezone Europe/Berlin --isUtc
+# System bootloader configuration
+bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=vda
+autopart --type=lvm
+# Partition clearing information
+clearpart --none --initlabel
+
+%packages
+@^minimal
+@core
+chrony
+kexec-tools
+
+%end
+
+%post --log=/root/grubby.log
+/sbin/grubby --update-kernel=ALL --args="console=ttyS0"
+
+mkdir /root/.ssh
+echo "PUBLIC_KEY" >> /root/.ssh/authorized_keys
+
+%end
