@@ -1,1 +1,7 @@
 dig @8.8.8.8 mydomain.ru
+dig wikimedia.org MX @ns0.wikimedia.org
+dig @ns.mail.ru mail.ru mx
+dig @1.1.1.1 www.amazon.com +short
+dig @1.1.1.1 -x 12.127.16.68
+dig @1.1.1.1 www.competitor.com +norecurse
+dig example.com +trace
